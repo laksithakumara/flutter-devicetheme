@@ -1,4 +1,4 @@
-# Device Theme(IOS under development)
+# Device Theme
 
 A Flutter package to read and return the device theme and set app theme.
 
