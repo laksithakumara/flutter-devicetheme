@@ -2,6 +2,7 @@
 /// is governed by an Apache License 2.0 that can be found in the LICENSE file.
 /// 
 import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,7 +16,9 @@ class Devicetheme {
   /// Returns a [String] of the currently set DEVICE theme
   /// (e.g. light or dark)
   static Future<String> get platformTheme async {
-    final String theme = await getTheme();
+    final String theme = await _channel.invokeMethod('getTheme');
+    log('fff');
+    log(theme);
     return theme;
   }
 

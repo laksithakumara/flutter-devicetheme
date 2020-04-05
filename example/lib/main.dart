@@ -25,8 +25,8 @@ class _MyAppState extends State<MyApp> {
     String themeName;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      await Devicetheme.setAppTheme('light');
-      themeName = await Devicetheme.appTheme;
+      //await Devicetheme.setAppTheme('light');
+      themeName = await Devicetheme.platformTheme;
     } on PlatformException catch (exception) {
       print(exception);
       themeName = 'Failed to get theme name.';

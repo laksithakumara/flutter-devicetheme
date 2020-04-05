@@ -1,6 +1,6 @@
 name: devicetheme
-description: A new flutter plugin project.
-version: 0.0.1
+description: A Flutter package to read and return the device theme and set app theme.
+version: 0.0.5
 author:
 homepage:
 

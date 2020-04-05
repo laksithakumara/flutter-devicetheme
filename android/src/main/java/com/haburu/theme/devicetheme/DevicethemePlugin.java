@@ -1,37 +1,46 @@
 package com.haburu.theme.devicetheme;
 
-import androidx.annotation.NonNull;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.Configuration;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
-import android.content.res.Configuration;
+import io.flutter.plugin.common.PluginRegistry;
 
 public class DevicethemePlugin implements FlutterPlugin, MethodCallHandler {
-  @Override
-  public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    final MethodChannel channel = new MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "devicetheme");
-    channel.setMethodCallHandler(new DevicethemePlugin(flutterPluginBinding));
-  }
+  private Context applicationContext;
+  private MethodChannel methodChannel;
 
-  // This static function is optional and equivalent to onAttachedToEngine. It supports the old
-  // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
-  // plugin registration via this function while apps migrate to use the new Android APIs
-  // post-flutter-1.12 via https://flutter.dev/go/android-project-migration.
-  //
-  // It is encouraged to share logic between onAttachedToEngine and registerWith to keep
-  // them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
-  // depending on the user's project. onAttachedToEngine or registerWith must both be defined
-  // in the same class.
-  public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "devicetheme");
-    channel.setMethodCallHandler(new DevicethemePlugin());
+  /** Plugin registration. */
+  public static void registerWith(PluginRegistry.Registrar registrar) {
+    final DevicethemePlugin instance = new DevicethemePlugin();
+    instance.onAttachedToEngine(registrar.context(), registrar.messenger());
   }
 
   @Override
-  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
+  public void onAttachedToEngine(FlutterPluginBinding binding) {
+    onAttachedToEngine(binding.getApplicationContext(), binding.getBinaryMessenger());
+  }
+  private void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
+    this.applicationContext = applicationContext;
+    methodChannel = new MethodChannel(messenger, "devicetheme");
+    methodChannel.setMethodCallHandler(this);
+  }
+  @Override
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+    applicationContext = null;
+    methodChannel.setMethodCallHandler(null);
+    methodChannel = null;
+  }
+
+  @Override
+  public void onMethodCall(MethodCall call, Result result) {
     if (call.method.equals("getTheme")) {
       result.success(getTheme());
     } else {
@@ -39,35 +48,21 @@ public class DevicethemePlugin implements FlutterPlugin, MethodCallHandler {
     }
   }
 
-  private FlutterPluginBinding mFlutterPlugin;
-
-  public DevicethemePlugin(FlutterPluginBinding flutterPlugin) {
-    mFlutterPlugin = flutterPlugin;
-  }
-
-  public DevicethemePlugin() {
-
-  }
-
   private String getTheme() {
     try {
-      int currentNightMode = mFlutterPlugin.getApplicationContext().getResources().getConfiguration().uiMode
+      int currentNightMode = applicationContext.getResources().getConfiguration().uiMode
           & Configuration.UI_MODE_NIGHT_MASK;
       switch (currentNightMode) {
       case Configuration.UI_MODE_NIGHT_NO:
+        case Configuration.UI_MODE_NIGHT_UNDEFINED:
           return "light";
       case Configuration.UI_MODE_NIGHT_YES:
           return "night";
-      case Configuration.UI_MODE_NIGHT_UNDEFINED:
-          return "light";
       }
-      return "error";
+      return "light";
     } catch (Exception e) {
-      return "error";
+      return "light";
     }
   }
 
-  @Override
-  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-  }
 }
