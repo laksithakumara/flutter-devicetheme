@@ -1,8 +1,7 @@
 name: devicetheme
 description: A Flutter package to read and return the device theme and set app theme.
 version: 0.0.5
-author:
-homepage:
+homepage: https://github.com/laksithakumara/
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

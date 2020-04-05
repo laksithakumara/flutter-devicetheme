@@ -17,8 +17,6 @@ class Devicetheme {
   /// (e.g. light or dark)
   static Future<String> get platformTheme async {
     final String theme = await _channel.invokeMethod('getTheme');
-    log('fff');
-    log(theme);
     return theme;
   }
 
